@@ -3,10 +3,11 @@ import "./App.css";
 import LinkList from "./components/LinkList";
 import CreateLink from "./components/CreateLink";
 import Header from "./components/Header";
-import Login from './components/Login'
+import Login from "./components/Login";
+import Search from "./components/Search";
 import { Switch, Route } from "react-router";
 import { Router } from "react-router-dom";
-import history from './history'
+import history from "./history";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route exact path="/" component={LinkList} />
             <Route exact path="/create" component={CreateLink} />
             <Route exact path="/login" component={Login} />
+            <Route exact path="/search" component={Search} />
           </Switch>
         </div>
       </div>

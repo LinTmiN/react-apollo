@@ -5,6 +5,7 @@
   "dependencies": {
     "apollo-boost": "^0.3.1",
     "apollo-link-context": "^1.0.17",
+    "apollo-link-ws": "^1.0.17",
     "graphql": "^14.2.1",
     "history": "^4.9.0",
     "react": "^16.8.6",
@@ -12,13 +13,15 @@
     "react-dom": "^16.8.6",
     "react-router": "^5.0.0",
     "react-router-dom": "^5.0.0",
-    "react-scripts": "3.0.0"
+    "react-scripts": "3.0.0",
+    "subscriptions-transport-ws": "^0.9.16"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts start&yarn server",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "cd server&&yarn start"
   },
   "eslintConfig": {
     "extends": "react-app"

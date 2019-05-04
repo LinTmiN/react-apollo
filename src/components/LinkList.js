@@ -1,24 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "./Link";
-import { Query } from "react-apollo";
-import { FEED_QUERY } from "../graphql/query";
+import { withFeed } from "../graphql/query";
 
+function LinkList({ data: { loading, error, feed, subscribeNewData } }) {
+  useEffect(() => {
+    const unSubscrib=subscribeNewData()
+    return unSubscrib
+  }, [subscribeNewData]);
 
-export default function LinkList() {
+  if (loading) return <div>loading...</div>;
+  if (error) return <div>Error:{error}</div>;
+  const linksToRender = feed ? feed.links : [];
   return (
-    <Query query={FEED_QUERY}>
-      {({ loading, error, data }) => {
-        if (loading) return <div>loading...</div>;
-        if (error) return <div>Error:{error}</div>;
-        const linksToRender=data.feed.links
-        return (
-          <div>
-            {linksToRender.map(link => (
-              <Link key={link.id} link={link} />
-            ))}
-          </div>
-        );
-      }}
-    </Query>
+    <div>
+      {linksToRender.map((link, i) => (
+        <Link key={link.id} index={i} link={link} />
+      ))}
+    </div>
   );
 }
+
+export default withFeed(LinkList);

@@ -47,8 +47,11 @@ class Login extends Component {
               <div className="pointer mr2 button" onClick={mutation}>
                 {login ? "login" : "create account"}
               </div>
+
             )}
           </Mutation>
+         <span href="#" onClick={()=>this.setState(prev=>({login:!prev.login}))}> or {login?` create new account`:' login'}</span>
+
         </div>
       </div>
     );

@@ -1,7 +1,5 @@
 import React, { Component } from "react";
-import { Mutation } from "react-apollo";
-import { Create_Link_Mutation } from "../graphql/mutations";
-import history from "../history";
+import { withCreateLink } from "../graphql/mutations";
 class CreateLink extends Component {
   state = {
     description: "",
@@ -28,19 +26,20 @@ class CreateLink extends Component {
             placeholder="The URL for the link"
           />
         </div>
-        <Mutation
-          onCompleted={() => this.props.history.replace("/")}
-          mutation={Create_Link_Mutation}
-          variables={{ description, url }}
-        >
-          {(createLink, ...rest) => {
-            console.log(rest, "rst");
-            return <button onClick={createLink}>Submit</button>;
+        <button
+          onClick={() => {
+            this.props.createLink({
+              url,
+              description
+            });
           }}
-        </Mutation>
+        >
+          Submit
+        </button>
+        ;
       </div>
     );
   }
 }
 
-export default CreateLink;
+export default withCreateLink(CreateLink);
