@@ -9,11 +9,10 @@ import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
-  console.log(graphQLErrors, "qerrr");
   if (graphQLErrors || networkError) {
-    const messages = (graphQLErrors || networkError)
+    const messages = graphQLErrors?graphQLErrors
       .map(err => err.message)
-      .join(",</br>");
+      .join(",</br>"):networkError;
     alert(JSON.stringify(messages));
   }
 });

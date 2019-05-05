@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { FEED_QUERY } from "./query";
+import { LINKS_PER_PAGE } from "../constants";
 
 const Create_Link_Mutation = gql`
   mutation PostMutation($description: String!, $url: String!) {
@@ -71,14 +72,29 @@ const withVote = graphql(VOTE_MUTATION, {
         })
     };
   },
-  options: {
-    update: (store, { data: { vote, ...rest } }) => {
-      const votedLinkId = vote.link.id;
-      const data = store.readQuery({ query: FEED_QUERY });
-      const votedLink = data.feed.links.find(link => link.id === votedLinkId);
-      votedLink.votes = vote.link.votes;
-      store.writeQuery({ query: FEED_QUERY, data });
-    }
+  options: props => {
+    const { location, match } = props;
+    return {
+      update: (store, { data: { vote, ...rest } }) => {
+        const isNewPage = location.pathname.includes("new");
+        const page = parseInt(match.params.page, 10);
+        const first = isNewPage ? LINKS_PER_PAGE : 100;
+        const skip = isNewPage ? (page - 1) * LINKS_PER_PAGE : 0;
+        const orderBy = isNewPage ? "createdAt_DESC" : null;
+        const votedLinkId = vote.link.id;
+        const data = store.readQuery({
+          query: FEED_QUERY,
+          variables: {
+            first,
+            skip,
+            orderBy
+          }
+        });
+        const votedLink = data.feed.links.find(link => link.id === votedLinkId);
+        votedLink.votes = vote.link.votes;
+        store.writeQuery({ query: FEED_QUERY, data });
+      }
+    };
   }
 });
 
@@ -94,6 +110,9 @@ const withCreateLink = graphql(Create_Link_Mutation, {
   }),
   options: props => ({
     update: (store, { data: { post } }) => {
+      const first = LINKS_PER_PAGE
+      const skip = 0
+      const orderBy = 'createdAt_DESC'
       const data = store.readQuery({ query: FEED_QUERY });
       data.feed.links.push(post);
       store.writeQuery({ query: FEED_QUERY, data });

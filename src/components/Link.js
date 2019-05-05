@@ -1,9 +1,10 @@
 import React from "react";
+import { compose } from "react-apollo";
 import { AUTH_TOKEN } from "../constants";
 import { withVote } from "../graphql/mutations";
+import { withRouter } from "react-router";
 import { timeDifferenceForDate } from "../utils";
-function Link({ link, index, voteLink,...rest }) {
-  console.log(rest)
+function Link({ link, index, voteLink }) {
   const authToken = localStorage.getItem(AUTH_TOKEN);
   return (
     <div className="flex mt2 items-start">
@@ -21,7 +22,7 @@ function Link({ link, index, voteLink,...rest }) {
         </div>
         <div className="f6 lh-copy gray">
           {link.votes.length} votes | by{" "}
-          {link.postedBy ? link.postedBy.name : "Unknown"}{" "}
+          {link.postedBy ? link.postedBy.name : "Unknown"}
           {timeDifferenceForDate(link.createdAt)}
         </div>
       </div>
@@ -29,4 +30,7 @@ function Link({ link, index, voteLink,...rest }) {
   );
 }
 
-export default withVote(Link);
+export default compose(
+  withRouter,
+  withVote
+)(Link);

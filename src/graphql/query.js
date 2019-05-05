@@ -1,9 +1,11 @@
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
+import { LINKS_PER_PAGE } from "../constants";
 import { NEW_LINKS_SUBSCRIPTION, NEW_VOTES_SUBSCRIPTION } from "./subscription";
 const FEED_QUERY = gql`
-  {
-    feed {
+  query FEED_QUERY($first: Int, $skip: Int, $orderBy: LinkOrderByInput) {
+    feed(first: $first, skip: $skip, orderBy: $orderBy) {
+      count
       links {
         id
         createdAt
@@ -55,7 +57,6 @@ const withFeed = graphql(FEED_QUERY, {
           updateQuery: (prev, { subscriptionData }) => {
             if (!subscriptionData.data) return prev;
             const { link: votedLink } = subscriptionData.data.newVote;
-            console.log(prev,'prevFromVotes')
             const oldLink = prev.feed.links.find(
               ({ id }) => id === votedLink.id
             );
@@ -90,8 +91,40 @@ const withFeed = graphql(FEED_QUERY, {
         };
       }
     },
-    ...ownProps
-  })
+    ...ownProps,
+    isNewPage: ownProps.location.pathname.includes("new"),
+    pageIndex: ownProps.match.params.page
+      ? (ownProps.match.params.page - 1) * LINKS_PER_PAGE
+      : 0,
+    nextPage: () => {
+      const currentPage = parseInt(ownProps.match.params.page);
+      if (currentPage <= restData.feed.count / LINKS_PER_PAGE) {
+        const _nextPage = currentPage + 1;
+        ownProps.history.push(`/new/${_nextPage}`);
+      }
+    },
+    previousPage: () => {
+      const currentPage = parseInt(ownProps.match.params.page);
+      if (currentPage > 1) {
+        const _previouspage = currentPage - 1;
+        ownProps.history.push(`/new/${_previouspage}`);
+      }
+    }
+  }),
+  options: props => {
+    const isNewPage = props.location.pathname.includes("new");
+    const page = parseInt(props.match.params.page, 10);
+    const skip = isNewPage ? (page - 1) * LINKS_PER_PAGE : 0;
+    const first = isNewPage ? LINKS_PER_PAGE : 100;
+    const orderBy = isNewPage ? "createdAt_DESC" : null;
+    return {
+      variables: {
+        skip,
+        first,
+        orderBy
+      }
+    };
+  }
 });
 
 export { FEED_QUERY, FEED_SEARCH_QUERY, withFeed };
