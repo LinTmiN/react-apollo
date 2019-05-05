@@ -1,8 +1,14 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { withRouter } from "react-router";
+import { withRouter, RouteComponentProps } from "react-router";
 import { AUTH_TOKEN } from "../constants";
-class Header extends Component {
+import { History } from "history";
+
+export interface HeaderProps extends RouteComponentProps<any> {
+  history: History;
+}
+
+class Header extends Component<HeaderProps, any> {
   render() {
     const authToken = localStorage.getItem(AUTH_TOKEN);
     return (
@@ -52,4 +58,4 @@ class Header extends Component {
   }
 }
 
-export default withRouter(Header);
+export default withRouter<HeaderProps>(Header);

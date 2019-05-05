@@ -1,6 +1,21 @@
 import React, { Component } from "react";
 import { withCreateLink } from "../graphql/mutations";
-class CreateLink extends Component {
+import {History} from 'history'
+interface linArgs{
+  url:string,
+  description:string
+}
+
+export interface CreateLinkProps {
+  createLink: (args:linArgs)=>void;
+  history:History
+}
+
+export interface CreateLinkStates {
+  description: string;
+  url: string;
+}
+class CreateLink extends Component<CreateLinkProps, CreateLinkStates> {
   state = {
     description: "",
     url: ""

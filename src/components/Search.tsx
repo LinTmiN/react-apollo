@@ -1,9 +1,13 @@
 import React, { Component } from "react";
-import { withApollo } from "react-apollo";
+import { withApollo, compose } from "react-apollo";
 import { FEED_SEARCH_QUERY } from "../graphql/query";
 import Link from "./Link";
 
-class Search extends Component {
+export interface SearchProps {
+  client:any
+}
+
+class Search extends Component<SearchProps, any> {
   state = {
     links: [],
     filter: ""
@@ -20,7 +24,7 @@ class Search extends Component {
           />
           <button onClick={() => this._executeSearch()}>OK</button>
         </div>
-        {this.state.links.map((link, index) => (
+        {this.state.links.map((link: { id: string }, index) => (
           <Link key={link.id} link={link} index={index} />
         ))}
       </div>
@@ -38,4 +42,4 @@ class Search extends Component {
   };
 }
 
-export default withApollo(Search);
+export default compose(withApollo)(Search);

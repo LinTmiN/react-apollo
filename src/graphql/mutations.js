@@ -2,7 +2,6 @@ import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { FEED_QUERY } from "./query";
 import { LINKS_PER_PAGE } from "../constants";
-
 const Create_Link_Mutation = gql`
   mutation PostMutation($description: String!, $url: String!) {
     post(description: $description, url: $url) {
@@ -64,7 +63,8 @@ const withVote = graphql(VOTE_MUTATION, {
   props: ({ mutate, ...rest }) => {
     return {
       ...rest,
-      voteLink: linkId =>
+      voteLink: (linkId) =>
+        mutate &&
         mutate({
           variables: {
             linkId
@@ -101,6 +101,7 @@ const withVote = graphql(VOTE_MUTATION, {
 const withCreateLink = graphql(Create_Link_Mutation, {
   props: ({ mutate }) => ({
     createLink: ({ url, description }) =>
+      mutate &&
       mutate({
         variables: {
           url,
@@ -108,12 +109,19 @@ const withCreateLink = graphql(Create_Link_Mutation, {
         }
       })
   }),
-  options: props => ({
+  options: (props) => ({
     update: (store, { data: { post } }) => {
-      const first = LINKS_PER_PAGE
-      const skip = 0
-      const orderBy = 'createdAt_DESC'
-      const data = store.readQuery({ query: FEED_QUERY });
+      const first = LINKS_PER_PAGE;
+      const skip = 0;
+      const orderBy = "createdAt_DESC";
+      const data = store.readQuery({
+        query: FEED_QUERY,
+        variables: {
+          first,
+          skip,
+          orderBy
+        }
+      });
       data.feed.links.push(post);
       store.writeQuery({ query: FEED_QUERY, data });
     },

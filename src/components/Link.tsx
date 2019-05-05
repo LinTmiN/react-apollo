@@ -4,7 +4,15 @@ import { AUTH_TOKEN } from "../constants";
 import { withVote } from "../graphql/mutations";
 import { withRouter } from "react-router";
 import { timeDifferenceForDate } from "../utils";
-function Link({ link, index, voteLink }) {
+import { linkType } from "../types";
+
+export interface LinkProps {
+  link: linkType;
+  index: number;
+  voteLink: (id: string) => void;
+}
+
+function Link({ link, index, voteLink }: LinkProps) {
   const authToken = localStorage.getItem(AUTH_TOKEN);
   return (
     <div className="flex mt2 items-start">
